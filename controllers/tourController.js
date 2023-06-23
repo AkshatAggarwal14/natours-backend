@@ -5,7 +5,7 @@ const tours = JSON.parse(
 );
 
 exports.checkID = (req, res, next, val) => {
-    console.log(`Tour id is: ${val}`);
+    // console.log(`Tour id is: ${val}`);
 
     if (req.params.id * 1 > tours.length) {
         return res.status(404).json({
@@ -27,7 +27,7 @@ exports.checkBody = (req, res, next) => {
 };
 
 exports.getAllTours = (req, res) => {
-    console.log(req.requestTime);
+    // console.log(req.requestTime);
 
     res.status(200).json({
         status: 'success',
@@ -40,7 +40,7 @@ exports.getAllTours = (req, res) => {
 };
 
 exports.getTour = (req, res) => {
-    console.log(req.params);
+    // console.log(req.params);
     const id = req.params.id * 1;
 
     const tour = tours.find((el) => el.id === id);
@@ -57,7 +57,7 @@ exports.createTour = (req, res) => {
     // console.log(req.body);
 
     const newId = tours[tours.length - 1].id + 1;
-    const newTour = Object.assign({ id: newId }, req.body);
+    const newTour = { id: newId, ...req.body };
 
     tours.push(newTour);
 
