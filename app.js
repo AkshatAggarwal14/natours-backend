@@ -162,26 +162,20 @@ const deleteUser = (req, res) => {
     });
 };
 
-// app.get('/api/v1/tours', getAllTours);
-// app.get('/api/v1/tours/:id', getTour);
-// app.post('/api/v1/tours', createTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
+//! We should instead make a route for each resource
+const tourRouter = express.Router();
+const userRouter = express.Router();
 
-//? refactored
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// We can use this router as a middleware
+//! Mounting a new router on a route!!
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
-app.route('/api/v1/tours/:id')
-    .get(getTour)
-    .patch(updateTour)
-    .delete(deleteTour);
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
-
-app.route('/api/v1/users/:id')
-    .get(getUser)
-    .patch(updateUser)
-    .delete(deleteUser);
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 const PORT = 3000;
 app.listen(PORT, () => {
