@@ -1,20 +1,25 @@
 const express = require('express');
 const morgan = require('morgan');
-// convention to configure express in app.js
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
-// Global middlewares
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
 app.use(express.json());
+
+// Serving static files using built-in express middleware
+// This servers the files in specified folder as though the base URL is the root
+app.use(express.static(`${__dirname}/public`));
+
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     next();
 });
 
-//! Mounting routers
+// Mount Routers
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
