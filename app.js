@@ -14,10 +14,10 @@ app.use(express.json());
 // This servers the files in specified folder as though the base URL is the root
 app.use(express.static(`${__dirname}/public`));
 
-app.use((req, res, next) => {
-    req.requestTime = new Date().toISOString();
-    next();
-});
+// app.use((req, res, next) => {
+//     req.requestTime = new Date().toISOString();
+//     next();
+// });
 
 // Mount Routers
 app.use('/api/v1/tours', tourRouter);

@@ -7,10 +7,12 @@ const router = express.Router();
 // router.param('id', tourController.checkID);
 
 // we can also chain middlewares when passing handlers!
+// router.route().post(tourController.checkBody, tourController.createTour);
+
 router
     .route('/')
     .get(tourController.getAllTours)
-    .post(tourController.checkBody, tourController.createTour);
+    .post(tourController.createTour);
 
 router
     .route('/:id')
