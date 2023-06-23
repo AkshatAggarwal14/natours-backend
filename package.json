@@ -2,9 +2,9 @@
     "name": "natours",
     "version": "1.0.0",
     "description": "Learning node, express, mongoDB",
-    "main": "app.js",
+    "main": "server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "nodemon server.js"
     },
     "author": "Akshat Aggarwal",
     "license": "ISC",
