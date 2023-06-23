@@ -11,10 +11,7 @@ const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// We mention version number in the route so it doesnt disturb users already using /v0/
-// Route Handler!
-// function(req, res) {}
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
     // use JSend data specification!
     res.status(200).json({
         status: 'success',
@@ -24,11 +21,9 @@ app.get('/api/v1/tours', (req, res) => {
             tours,
         },
     });
-});
+};
 
-//? :variable
-//? :optionalVariable?
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
     console.log(req.params);
 
     // this will convert string to number
@@ -52,9 +47,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
             tour,
         },
     });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
     // We get the JSON as JS Object that we sent in the POST request
     // console.log(req.body);
 
@@ -79,9 +74,9 @@ app.post('/api/v1/tours', (req, res) => {
 
     // ERR_HTTP_HEADERS_SENT : happens if you try to send two responses!
     // res.send('Done');
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
     console.log(req.params);
 
     const requestedID = parseInt(req.params.id);
@@ -97,9 +92,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
         status: 'success',
         data: '<Updated tour here>',
     });
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
     console.log(req.params);
 
     const requestedID = parseInt(req.params.id);
@@ -116,7 +111,21 @@ app.delete('/api/v1/tours/:id', (req, res) => {
         status: 'success',
         data: null,
     });
-});
+};
+
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', createTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+//? refactored
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app.route('/api/v1/tours/:id')
+    .get(getTour)
+    .patch(updateTour)
+    .delete(deleteTour);
 
 const PORT = 3000;
 app.listen(PORT, () => {
