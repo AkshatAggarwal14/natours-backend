@@ -9,6 +9,14 @@ const router = express.Router();
 // we can also chain middlewares when passing handlers!
 // router.route().post(tourController.checkBody, tourController.createTour);
 
+// 127.0.0.1:3000/api/v1/tours?limit=5&sort=-ratingsAverage,price
+// 5 Top Rated and Cheap tours
+// This is a frequently used route, so we can use aliasing here!
+//! Aliasing chains middleware
+router
+    .route('/top-5-cheap')
+    .get(tourController.aliasTopTours, tourController.getAllTours);
+
 router
     .route('/')
     .get(tourController.getAllTours)
