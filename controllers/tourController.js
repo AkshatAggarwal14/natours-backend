@@ -1,4 +1,5 @@
 const Tour = require('../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
 
 // prefills parts of query object before reaching .getAllTours() handler
 exports.aliasTopTours = (req, res, next) => {
@@ -10,73 +11,17 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getAllTours = async (req, res) => {
     try {
-        // TODO: Build Query
-        // req.query gets the query string object [Automatically done by express!]
-        // We need to exclude some fields like page=2 inside the query string for pagination later!
+        // TODO: Build and Execute Query
 
-        //* 1A) Filtering
-        const queryObj = { ...req.query }; // creates a copy
-        const excludedFields = ['page', 'sort', 'limit', 'fields'];
-        excludedFields.forEach((el) => delete queryObj[el]);
+        // req.query gets the query string object [Automatically done by express!
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
+        // We can chain these methods as we `return this;`
 
-        // GET /api/v1/tours?duration[gte]=5&difficulty=easy&page=2
-        // { duration: { gte: '5' }, difficulty: 'easy' }
-        // Actual MongoDB query => { duration: { $gte: 5 }, difficulty: 'easy' }
-
-        //* 1B) Advance Filtering
-        let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(
-            /\b(gte|lte|gt|lt)\b/g,
-            (match) => `$${match}`
-        ); // Use regex to replace lt, gt, lte, gte with $lt, $gt, $lte, $gte
-
-        let query = Tour.find(JSON.parse(queryStr));
-
-        //* 2) Sorting
-        if (req.query.sort) {
-            // GET /api/v1/tours?sort=-price,ratingsAverage
-            const sortBy = req.query.sort.split(',').join(' ');
-            query = query.sort(sortBy);
-        } else {
-            // default (no sort field in queryStr)
-            query = query.sort('-createdAt');
-        }
-
-        //* 3) Field Limiting
-        if (req.query.fields) {
-            // GET /api/v1/tours?fields=-name,-duration
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
-        } else {
-            query = query.select('-__v');
-        }
-
-        //* 4) Pagination
-        // GET /api/v1/tours?page=2&limit=10
-        // (1-10) Page 1, (11-20) Page 2
-        // so to get page 2 with 10 results per page, we need to skip 10 results before actually querying and reaching 11th result
-        const page = req.query.page * 1 || 1;
-        const limit = req.query.limit * 1 || 100;
-        const skip = (page - 1) * limit;
-        query = query.skip(skip).limit(limit);
-
-        if (req.query.page) {
-            const numTours = await Tour.countDocuments();
-            if (skip >= numTours) {
-                throw new Error('This page does not exist!');
-            }
-        }
-
-        // TODO: Execute Query
-        const tours = await query;
-        // query.sort().select().skip().limit();
-        //! All these methods always return a new query, which we can chain and finally await the query at the end.
-
-        // const tours = await Tour.find()
-        //     .where('duration')
-        //     .equals(5)
-        //     .where('difficulty')
-        //     .equals('easy');
+        const tours = await features.query;
 
         // TODO: Send Response
         res.status(200).json({
@@ -87,6 +32,7 @@ exports.getAllTours = async (req, res) => {
             },
         });
     } catch (err) {
+        console.log(err);
         res.status(404).json({
             status: 'fail',
             message: err,
