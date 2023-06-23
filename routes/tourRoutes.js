@@ -3,10 +3,8 @@ const tourController = require('../controllers/tourController');
 
 const router = express.Router();
 
-//! In a param middleware we get access to the param through val argument
-// We can use this middleware to check if ID is valid!
-// This middleware is a part of our pipeline now! => Validation of ID is done automatically by this param middleware
-router.param('id', tourController.checkID);
+// Not needed anymore as MongoDB will give error on Invalid ID itself
+// router.param('id', tourController.checkID);
 
 // we can also chain middlewares when passing handlers!
 router
