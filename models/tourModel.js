@@ -122,21 +122,22 @@ toursSchema.pre('save', function (next) {
 // 2) QUERY MIDDLEWARE: runs before or after a certain query is executed
 //? Pre Find Hook: doesnt work on findOne() or findById() => Thus need a regex
 toursSchema.pre(/^find/, function (next) {
-    // this.find({ secretTour: { $ne: true } });
+    // dont find secret tours!
+    this.find({ secretTour: { $ne: true } });
     this.start = Date.now();
     next();
 });
 
-toursSchema.post(/^find/, function (doc, next) {
-    console.log(`Query took ${Date.now() - this.start}ms`);
-    next();
-});
+// toursSchema.post(/^find/, function (doc, next) {
+//     console.log(`Query took ${Date.now() - this.start}ms`);
+//     next();
+// });
 
 // 3) AGGREGATION MIDDLEWARE: runs before or after an aggregation happens
 // We now dont include secret tours in the aggregate operations!
 toursSchema.pre('aggregate', function (next) {
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-    console.log(this.pipeline());
+    // console.log(this.pipeline());
     next();
 });
 

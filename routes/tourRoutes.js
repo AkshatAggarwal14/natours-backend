@@ -20,6 +20,9 @@ router
 router.route('/tour-stats').get(tourController.getTourStats);
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
+//! We can also use catchAsync here
+// router.route('/').get(catchAsync(tourController.getAllTours))
+
 router
     .route('/')
     .get(tourController.getAllTours)
